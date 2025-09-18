@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 # Defaults
 IMAGE_FOLDER="./image"
@@ -46,15 +46,45 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Prefer tools from a local virtualenv if available
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VENV_DIR="${VENV_DIR:-"$SCRIPT_DIR/.venv"}"
+
+# Choose spotdl
+if [[ -x "$VENV_DIR/bin/spotdl" ]]; then
+  SPOTDL="$VENV_DIR/bin/spotdl"
+elif [[ -x "$VENV_DIR/Scripts/spotdl.exe" ]]; then
+  SPOTDL="$VENV_DIR/Scripts/spotdl.exe"
+elif command -v spotdl >/dev/null 2>&1; then
+  SPOTDL="spotdl"
+else
+  echo "spotdl not found. Activate your venv or run scripts/setup_venv.sh" >&2
+  exit 1
+fi
+
+# Choose python
+if [[ -x "$VENV_DIR/bin/python" ]]; then
+  PY="$VENV_DIR/bin/python"
+elif [[ -x "$VENV_DIR/Scripts/python.exe" ]]; then
+  PY="$VENV_DIR/Scripts/python.exe"
+elif command -v python3 >/dev/null 2>&1; then
+  PY="python3"
+elif command -v python >/dev/null 2>&1; then
+  PY="python"
+else
+  echo "Python not found. Please install Python 3.x or create a venv." >&2
+  exit 1
+fi
+
 # Ensure folders exist
 mkdir -p "$IMAGE_FOLDER" "$MP3_FOLDER"
 
 # Step 1: Download playlist
 echo "Downloading playlist from $PLAYLIST_URL..."
-spotdl "$PLAYLIST_URL" --output "$MP3_FOLDER"
+"$SPOTDL" "$PLAYLIST_URL" --output "$MP3_FOLDER"
 
 # Step 2: Build command for create_image_audio_videos.py
-CMD=(python3 create_image_audio_videos.py "$IMAGE_FOLDER" "$MP3_FOLDER" "$TIME_LIMIT")
+CMD=("$PY" create_image_audio_videos.py "$IMAGE_FOLDER" "$MP3_FOLDER" "$TIME_LIMIT")
 if [ -n "$OUTPUT_FOLDER" ]; then
   CMD+=("$OUTPUT_FOLDER")
 fi

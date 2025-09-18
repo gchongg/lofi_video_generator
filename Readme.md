@@ -34,6 +34,34 @@ ytlofi/
 pip install yt-dlp mutagen ffmpeg-python
 ```
 
+## 🧰 Environment Setup (venv)
+
+Use the provided scripts to create an isolated Python virtual environment and install all dependencies from `requirements.txt`.
+
+macOS/Linux:
+```bash
+# Create venv and install dependencies
+bash scripts/setup_venv.sh
+
+# Activate the environment
+source .venv/bin/activate
+```
+
+Windows (PowerShell):
+```powershell
+# Create venv and install dependencies
+powershell -ExecutionPolicy Bypass -File .\scripts\setup_venv.ps1
+
+# Activate the environment
+.\.venv\Scripts\Activate.ps1
+```
+
+Notes:
+- macOS/Linux: set env vars `VENV_DIR` and `REQ_FILE` (e.g., `VENV_DIR=.venv bash scripts/setup_venv.sh`).
+- Windows: pass params `-VenvDir` and `-Requirements` (e.g., `powershell -File .\scripts\setup_venv.ps1 -VenvDir .venv`).
+- Deactivate with `deactivate` when you’re done.
+- Ensure FFmpeg is installed (see Required Software above).
+
 ## 🚀 Quick Start
 
 ### 1. Basic Video Generation
