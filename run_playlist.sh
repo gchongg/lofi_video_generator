@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Defaults
-IMAGE_FOLDER="./image"
+IMAGE_FOLDER="./images"
 MP3_FOLDER="./spotify"
 TIME_LIMIT=120
 OUTPUT_FOLDER=""
@@ -81,7 +81,7 @@ mkdir -p "$IMAGE_FOLDER" "$MP3_FOLDER"
 
 # Step 1: Download playlist
 echo "Downloading playlist from $PLAYLIST_URL..."
-"$SPOTDL" "$PLAYLIST_URL" --output "$MP3_FOLDER"
+"$SPOTDL" "$PLAYLIST_URL" --output "$MP3_FOLDER" --user-auth
 
 # Step 2: Build command for create_image_audio_videos.py
 CMD=("$PY" create_image_audio_videos.py "$IMAGE_FOLDER" "$MP3_FOLDER" "$TIME_LIMIT")
